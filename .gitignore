@@ -200,3 +200,5 @@ mlruns
 
 # Project-specific metadata and documentation (like memory banks, docs, etc.)
 .project/
+LICENSE.txt
+terraform__linux_amd64.zip
