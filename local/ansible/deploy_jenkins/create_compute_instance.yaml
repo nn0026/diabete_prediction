@@ -1,0 +1,49 @@
+- name: Create a Compute Engine instance and Firewall Rule for Jenkins
+  hosts: localhost
+  tasks:
+    - name: Start an instance
+      google.cloud.gcp_compute_instance:
+        name: jenkins-instance
+        machine_type: e2-standard-2
+        zone: asia-southeast1-a 
+        project: mlecourse-455815 
+        auth_kind: serviceaccount
+        service_account_file: ../secrets/mlecourse-455815-5abd9a647f00.json 
+        disks:
+          - auto_delete: true
+            boot: true
+            initialize_params:
+              source_image: projects/ubuntu-os-cloud/global/images/ubuntu-2204-jammy-v20230727
+        network_interfaces:
+          - network:
+              selfLink: global/networks/default
+            access_configs:
+              - name: External NAT
+                type: ONE_TO_ONE_NAT
+        # Adding tags might be good practice for firewall association, but modifying existing rule for now
+        # tags:
+        #   items:
+        #     - jenkins-8080
+        state: present # change to absent to delete the instance
+      # Registering variable to potentially use IP later, although this version doesn't use it like the doc version
+      register: jenkins_vm_info
+
+    - name: Create inbound firewall rule for Jenkins ports
+      google.cloud.gcp_compute_firewall:
+        name: allow-jenkins-ports # Renamed rule for clarity
+        network:
+          selfLink: global/networks/default
+        allowed:
+          - ip_protocol: TCP
+            ports:
+              - '8080' # Added Jenkins default port
+              - '8081' # Kept existing port
+              - '50000' # Kept existing port (often used for Jenkins agents)
+        source_ranges:
+          - 0.0.0.0/0 # Allow traffic from any source (use a more specific source range for security)
+        direction: INGRESS # Direction from outside to inside, EGRESS is the opposite direction
+        description: Allow incoming traffic on Jenkins ports 8080, 8081, 50000
+        project: mlecourse-455815 # Corrected Project ID
+        auth_kind: serviceaccount
+        service_account_file: ../secrets/mlecourse-455815-5abd9a647f00.json # Corrected SA Key File
+        state: present
