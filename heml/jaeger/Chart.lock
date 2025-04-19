@@ -1,0 +1,15 @@
+dependencies:
+- name: cassandra
+  repository: https://charts.bitnami.com/bitnami
+  version: 12.3.1
+- name: elasticsearch
+  repository: https://charts.bitnami.com/bitnami
+  version: 20.0.4
+- name: kafka
+  repository: https://charts.bitnami.com/bitnami
+  version: 26.6.2
+- name: common
+  repository: https://charts.bitnami.com/bitnami
+  version: 2.27.0
+digest: sha256:6b7fdea233ba24cd5641dec803b44941dc776b77549add6c2ba7ea972bd4bd90
+generated: "2025-04-18T15:01:03.226759179+07:00"

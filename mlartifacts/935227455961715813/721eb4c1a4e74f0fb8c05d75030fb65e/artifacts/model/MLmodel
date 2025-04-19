@@ -1,0 +1,28 @@
+artifact_path: model
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.11.11
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.3.0
+is_signature_from_type_hint: false
+mlflow_version: 2.21.3
+model_size_bytes: 846
+model_uuid: 88754f4028214b808eab17d4ef915163
+prompts: null
+run_id: 721eb4c1a4e74f0fb8c05d75030fb65e
+signature:
+  inputs: '[{"type": "double", "name": "DiabetesPedigreeFunction", "required": true},
+    {"type": "double", "name": "Age", "required": true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "int64", "shape": [-1]}}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2025-04-14 14:06:40.648215'
