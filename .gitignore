@@ -214,3 +214,26 @@ local/ansible/secrets/
 *.tfstate.backup
 local/ansible/secrets/*.json
 terraform/*.json
+
+# Terraform files and credentials
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+terraform__linux_amd64.zip
+*.tfvars
+*.tfplan
+
+# Credentials and secrets
+*.pem
+*.key
+*.p12
+local/ansible/secrets/
+*mlecourse*.json
+service-account*.json
+*credential*.json
+*auth*.json
+
+# Large files
+*.model
+terraform/.terraform/providers/registry.terraform.io/hashicorp/google/5.45.2/linux_amd64/terraform-provider-google_v5.45.2_x5
