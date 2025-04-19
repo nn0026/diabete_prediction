@@ -1,0 +1,20 @@
+{{- if .Values.metrics.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+    release: prometheus-grafana-stack
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  endpoints:
+  - targetPort: 8099  # Use targetPort instead of port
+    path: /metrics
+    interval: 15s
+{{- end }}

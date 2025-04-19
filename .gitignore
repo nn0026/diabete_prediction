@@ -203,3 +203,5 @@ mlruns
 LICENSE.txt
 terraform__linux_amd64.zip
 /data
+temp_charts
+.dvc

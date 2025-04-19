@@ -1,0 +1,57 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}
+  namespace: model-serving
+  annotations:
+    helm.sh/resource-policy: keep 
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: hnapp.org.m1
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ .Release.Name }}
+              port:
+                number: 30000 
+        - path: /docs
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ .Release.Name }}
+              port:
+                number: 30000 
+        - path: /openapi.json
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: {{ .Release.Name }}
+              port:
+                number: 30000 
+        - path: /health
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ .Release.Name }}
+              port:
+                number: 30000 
+        - path: /preloaded_xgb
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ .Release.Name }}
+              port:
+                number: 30000 
+        - path: /predict
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ .Release.Name }}
+              port:
+                number: 30000 
+{{- end }}

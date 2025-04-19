@@ -1,0 +1,15 @@
+fastapi==0.103.1
+joblib==1.3.2
+numpy==1.25.2
+opentelemetry-api==1.19.0
+opentelemetry-exporter-prometheus==1.12.0rc1
+opentelemetry-instrumentation-fastapi==0.40b0
+opentelemetry-sdk==1.19.0
+opentelemetry-exporter-otlp-proto-grpc==1.19.0
+prometheus-client==0.17.1
+pydantic==2.3.0
+scikit-learn==1.3.0
+uvicorn[standard]==0.23.2
+xgboost==1.7.6
+opentelemetry-exporter-jaeger==1.19.0
+opentelemetry-exporter-otlp-proto-grpc==1.19.0 # Add OTLP gRPC exporter
