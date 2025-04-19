@@ -7,20 +7,26 @@ pipeline {
     }
 
     environment {
-        registry = 'hnmike/diabete_prediction' 
+        registry = 'hnmike/diabete_prediction'
         registryCredential = 'dockerhub'
     }
 
     stages {
         stage('Test') {
-            agent {
-                docker {
-                    image 'python:3.11' 
-                }
-            }
             steps {
-                echo 'Testing model correctness..'
-                sh 'pip install -r requirements.txt && pytest'
+                script {
+                    echo 'Running tests with Docker build...'
+                    sh '''
+                        docker build -t test-image -f Dockerfile .
+                        docker run --rm test-image bash -c "
+                            cd /app &&
+                            pip install pytest pytest-cov joblib numpy &&
+                            ls -la /app/tests &&
+                            python -m pytest /app/tests/test_model_correctness.py -v
+                        "
+                        docker rmi test-image 
+                    '''
+                }
             }
         }
         
@@ -42,28 +48,26 @@ pipeline {
             agent {
                 kubernetes {
                     containerTemplate {
-                        name 'helm' // Name of the container to be used for helm upgrade
-                        image 'fullstackdatascience/jenkins-k8s:lts' // The image containing helm
-                        imagePullPolicy 'Always' // Always pull image in case of using the same tag
+                        name 'helm'
+                        image 'fullstackdatascience/jenkins-k8s:lts'
+                        imagePullPolicy 'Always'
                     }
                 }
             }
             steps {
                 script {
                     container('helm') {
+                        echo "Deploying Helm chart ${CHART_PATH} as ${RELEASE_NAME}..."
                         sh """
                             helm upgrade --install ${RELEASE_NAME} ${CHART_PATH} \\
                             --namespace ${NAMESPACE} \\
                             --create-namespace \\
                             --set image.repository=${registry} \\
                             --set image.tag=${env.BUILD_NUMBER} \\
-                            --set ingress.enabled=true \\
                             --set ingress.hosts[0].host=${INGRESS_HOST} \\
-                            --set metrics.enabled=true \\
-                            --set metrics.servicemonitor.enabled=true \\
-                            --set service.metricsPort=8099 \\
                             --wait --timeout 5m
                         """
+                        echo "Deployment complete."
                     }
                 }
             }

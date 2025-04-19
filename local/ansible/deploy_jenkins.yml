@@ -1,13 +1,13 @@
-# Ansible Playbook to configure Jenkins VM (install Docker, run Jenkins container)
+
 - name: Configure Jenkins Server with Docker and Jenkins Container
-  hosts: jenkins_server # Target hosts defined in the inventory file
-  become: yes # Execute tasks with root privileges (sudo)
+  hosts: jenkins_server 
+  become: yes 
 
   tasks:
     - name: Update apt package cache
       apt:
         update_cache: yes
-        cache_valid_time: 3600 # Update only if cache is older than 1 hour
+        cache_valid_time: 3600 
 
     - name: Install prerequisite packages for Docker and Jenkins
       apt:
@@ -17,11 +17,10 @@
           - curl
           - gnupg-agent
           - software-properties-common
-          - default-jdk # Jenkins requires Java
-          - git # Often needed by Jenkins jobs
+          - default-jdk 
+          - git
         state: present
 
-    # --- Docker Installation ---
     - name: Add Docker's official GPG key
       apt_key:
         url: https://download.docker.com/linux/ubuntu/gpg
@@ -31,7 +30,7 @@
       apt_repository:
         repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
         state: present
-        filename: docker # Đặt tên file nguồn apt
+        filename: docker 
 
     - name: Install Docker Engine, CLI, and Containerd
       apt:
@@ -40,52 +39,42 @@
           - docker-ce-cli
           - containerd.io
         state: present
-        update_cache: yes # Update cache again after adding repo
-
+        update_cache: yes 
     - name: Ensure Docker service is started and enabled
       service:
         name: docker
         state: started
         enabled: yes
 
-    # --- Jenkins User Docker Permissions ---
-    # Add the user defined in inventory (ansible_user) to the docker group
-    # This allows running docker commands without sudo
+  
     - name: Add SSH user '{{ ansible_user }}' to the docker group
       user:
         name: "{{ ansible_user }}"
         groups: docker
         append: yes
-      notify: Restart sshd # Might need to restart sshd or relogin for group changes to take effect in current session
+      notify: Restart sshd 
 
-    # --- Jenkins Data Directory ---
     - name: Create Jenkins home directory on the host
       file:
         path: /var/jenkins_home
         state: directory
-        owner: 1000 # Jenkins user ID inside the container
-        group: 1000 # Jenkins group ID inside the container
-        mode: '0755' # Ensure Jenkins user can write
+        owner: 1000 
+        group: 1000 
+        mode: '0755' 
 
-    # --- Run Jenkins Container ---
+
     - name: Run Jenkins LTS container
       docker_container:
         name: jenkins
-        image: jenkins/jenkins:lts-jdk11 # Use LTS version with JDK 11
+        image: jenkins/jenkins:lts-jdk11 
         state: started
         restart_policy: unless-stopped
         ports:
-          - "8081:8080" # Map Jenkins UI port 8080 to host port 8081
-          - "50000:50000" # Map Jenkins agent port
+          - "8081:8080" 
+          - "50000:50000"
         volumes:
-          # Mount host directory to persist Jenkins data
           - /var/jenkins_home:/var/jenkins_home
-          # Mount Docker socket to allow Jenkins to control Docker
           - /var/run/docker.sock:/var/run/docker.sock
-        # Security Note: Running as root to access docker.sock.
-        # Consider rootless Docker or adjusting docker.sock permissions for production.
-        # user: root
-        # Alternative: Run as jenkins user (ID 1000) if permissions allow writing to volume
         user: "1000:1000"
 
   handlers:
