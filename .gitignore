@@ -204,4 +204,13 @@ LICENSE.txt
 terraform__linux_amd64.zip
 /data
 temp_charts
-.dvc
+.dvc/
+data.dvc
+
+# Security and large files
+local/ansible/secrets/
+.terraform/
+*.tfstate
+*.tfstate.backup
+local/ansible/secrets/*.json
+terraform/*.json
