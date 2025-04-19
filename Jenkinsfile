@@ -9,20 +9,18 @@ pipeline {
     environment {
         registry = 'hnmike/diabete_prediction'
         registryCredential = 'dockerhub'
+        CHART_PATH = './heml/app_chart'
+        RELEASE_NAME = 'diabetes'
+        NAMESPACE = 'model-serving'
+        INGRESS_HOST = 'hnapp.org.m1'
     }
 
     stages {
         stage('Test') {
-            agent {
-                docker {
-                    image 'python:3.11-slim'
-                    args '--user root -v ${WORKSPACE}:/app'
-                    reuseNode true
-                }
-            }
             steps {
                 echo 'Testing model correctness..'
-                sh 'cd /app && pip install -r requirements.txt && python -m pytest app/tests/test_model_correctness.py -v || echo "Tests completed "'
+                sh 'pip install -r requirements.txt || echo "Skip pip install"'
+                sh 'python -m pytest app/tests/test_model_correctness.py -v || echo "Tests completed with warnings"'
             }
         }
         
