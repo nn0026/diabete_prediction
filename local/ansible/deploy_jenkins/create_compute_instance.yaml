@@ -20,30 +20,25 @@
             access_configs:
               - name: External NAT
                 type: ONE_TO_ONE_NAT
-        # Adding tags might be good practice for firewall association, but modifying existing rule for now
-        # tags:
-        #   items:
-        #     - jenkins-8080
-        state: present # change to absent to delete the instance
-      # Registering variable to potentially use IP later, although this version doesn't use it like the doc version
+        state: present 
       register: jenkins_vm_info
 
     - name: Create inbound firewall rule for Jenkins ports
       google.cloud.gcp_compute_firewall:
-        name: allow-jenkins-ports # Renamed rule for clarity
+        name: allow-jenkins-ports 
         network:
           selfLink: global/networks/default
         allowed:
           - ip_protocol: TCP
             ports:
-              - '8080' # Added Jenkins default port
-              - '8081' # Kept existing port
-              - '50000' # Kept existing port (often used for Jenkins agents)
+              - '8080' 
+              - '8081' 
+              - '50000' 
         source_ranges:
-          - 0.0.0.0/0 # Allow traffic from any source (use a more specific source range for security)
-        direction: INGRESS # Direction from outside to inside, EGRESS is the opposite direction
+          - 0.0.0.0/0 
+        direction: INGRESS 
         description: Allow incoming traffic on Jenkins ports 8080, 8081, 50000
-        project: mlecourse-455815 # Corrected Project ID
+        project: mlecourse-455815 
         auth_kind: serviceaccount
-        service_account_file: ../secrets/mlecourse-455815-5abd9a647f00.json # Corrected SA Key File
+        service_account_file: ../secrets/mlecourse-455815-5abd9a647f00.json
         state: present
