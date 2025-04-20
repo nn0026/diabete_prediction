@@ -206,6 +206,8 @@ terraform__linux_amd64.zip
 temp_charts
 .dvc/
 data.dvc
+.dvcignore
+mlartifacts/
 
 # Security and large files
 local/ansible/secrets/
