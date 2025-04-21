@@ -1,111 +1,4 @@
-# Diabetes Prediction Project - End-to-End MLOps Pipeline
-
-## Table of Contents
-* [Project Overview](#project-overview)
-  * [Introduction](#introduction)
-  * [Key Features](#key-features)
-  * [Technology Stack](#technology-stack)
-* [System Architecture](#system-architecture)
-  * [MLOps Pipeline](#mlops-pipeline)
-  * [Kubernetes Architecture](#kubernetes-architecture)
-* [Repository Structure](#repository-structure)
-* [Getting Started](#getting-started)
-  * [Prerequisites](#prerequisites)
-  * [Environment Setup](#environment-setup)
-  * [Installation Guide](#installation-guide)
-* [Project Implementation](#project-implementation)
-  * [1. Infrastructure Setup](#1-infrastructure-setup)
-    * [1.1. GCP Project Configuration](#11-gcp-project-configuration)
-    * [1.2. GKE Cluster Deployment with Terraform](#12-gke-cluster-deployment-with-terraform)
-    * [1.3. Jenkins Deployment with Ansible](#13-jenkins-deployment-with-ansible)
-  * [2. Application Deployment](#2-application-deployment)
-    * [2.1. Nginx Ingress Controller](#21-nginx-ingress-controller)
-    * [2.2. Prediction API Deployment](#22-prediction-api-deployment)
-  * [3. Monitoring & Observability](#3-monitoring--observability)
-    * [3.1. Prometheus & Grafana Setup](#31-prometheus--grafana-setup)
-    * [3.2. Custom Metrics Dashboard](#32-custom-metrics-dashboard)
-    * [3.3. Alert Configuration](#33-alert-configuration)
-  * [4. Distributed Tracing](#4-distributed-tracing)
-    * [4.1. Jaeger Implementation](#41-jaeger-implementation)
-  * [5. CI/CD Pipeline](#5-cicd-pipeline)
-    * [5.1. Jenkins Configuration](#51-jenkins-configuration)
-    * [5.2. GitHub Integration](#52-github-integration)
-    * [5.3. Automated Deployment](#53-automated-deployment)
-* [Usage Guide](#usage-guide)
-  * [API Documentation](#api-documentation)
-  * [Model Training & Evaluation](#model-training--evaluation)
-  * [Monitoring Dashboard](#monitoring-dashboard)
-* [Development Tools](#development-tools)
-  * [MLflow Deployment](#mlflow-deployment)
-  * [Data Version Control](#data-version-control)
-  * [Pre-commit Hooks](#pre-commit-hooks)
-* [Future Improvements](#future-improvements)
-* [Additional Resources](#additional-resources)
-
-## Project Overview
-
-### Introduction
-
-This project implements an end-to-end MLOps pipeline for diabetes prediction using machine learning. The goal is to create a scalable, maintainable, and production-ready system that can predict diabetes based on various health metrics. This repository showcases best practices in MLOps including experiment tracking, CI/CD pipelines, containerization, Kubernetes orchestration, and monitoring.
-
-The system demonstrates how to build and deploy an ML model for diabetes prediction as a production-ready service on Google Cloud Platform (GCP) with full monitoring capabilities and automated deployment workflow.
-
-![Project Pipeline](assets/project_pipeline.png)
-
-### Key Features
-
-* End-to-end MLOps pipeline for diabetes prediction
-* Containerized deployment with Kubernetes orchestration
-* CI/CD automation with Jenkins
-* Infrastructure as Code using Terraform and Ansible
-* Comprehensive monitoring with Prometheus, Grafana and distributed tracing with Jaeger
-* Experiment tracking and model registry with MLflow
-* Data versioning with DVC
-* API development with FastAPI
-
-### Technology Stack
-
-* **Source Control**: Git/GitHub
-* **CI/CD**: Jenkins
-* **Experiment Tracking & Model Registry**: MLflow
-* **API Framework**: FastAPI
-* **Containerization**: Docker
-* **Container Orchestration**: Kubernetes (GKE)
-* **Package Manager**: Helm
-* **Monitoring**: Prometheus & Grafana
-* **Distributed Tracing**: Jaeger
-* **Infrastructure as Code**: Ansible & Terraform
-* **Ingress Controller**: Nginx Ingress
-* **Cloud Platform**: Google Cloud Platform (GCP)
-* **Data Version Control**: DVC
-
-## System Architecture
-
-### MLOps Pipeline
-
-The MLOps pipeline implements the following workflow:
-
-1. **Data Versioning** - Using DVC to track data changes
-2. **Experiment Tracking** - Using MLflow to track experiments and models
-3. **Model Training** - Jupyter notebooks for EDA and model training
-4. **Model Registry** - MLflow for versioning and registering models
-5. **Continuous Integration** - GitHub and Jenkins for CI/CD
-6. **Containerization** - Docker for packaging the application
-7. **Orchestration** - Kubernetes for container orchestration
-8. **Infrastructure as Code** - Terraform and Ansible for provisioning
-9. **Monitoring** - Prometheus and Grafana for observability
-10. **Tracing** - Jaeger for distributed tracing
-
-### Kubernetes Architecture
-
-The application is deployed on a Google Kubernetes Engine (GKE) cluster with the following components:
-
-* NGINX Ingress Controller for routing external traffic
-* FastAPI application pods with the prediction model
-* Prometheus and Grafana for monitoring and visualization
-* Jaeger for distributed tracing
-* Jenkins for CI/CD pipeline execution
-
+# Diabetes Prediction Project 
 ## Repository Structure
 
 ```
@@ -291,10 +184,10 @@ kubectl get service ingress-nginx-controller --namespace ingress-nginx
 Configure your domain by adding entries to your `/etc/hosts` file:
 
 ```
-<NGINX_INGRESS_IP>  tiennkapp.org.m1
-<NGINX_INGRESS_IP>  prometheus.tiennk.com
-<NGINX_INGRESS_IP>  grafana.tiennk.com
-<NGINX_INGRESS_IP>  alertmanager.tiennk.com
+<NGINX_INGRESS_IP>  hn.org.m1
+<NGINX_INGRESS_IP>  prometheus.hn.com
+<NGINX_INGRESS_IP>  grafana.hn.com
+<NGINX_INGRESS_IP>  alertmanager.hn.com
 ```
 
 #### 2.2. Prediction API Deployment
@@ -334,7 +227,7 @@ Access the services:
 The application uses OpenTelemetry to expose custom metrics for API requests and response times. These metrics are scraped by Prometheus and visualized in Grafana.
 
 To create a custom metrics dashboard:
-1. Go to Grafana (http://grafana.tiennk.com)
+1. Go to Grafana (http://grafana.hn.com)
 2. Create a new dashboard
 3. Add visualizations for the custom metrics:
    - `diabetespred_request_counter`: Number of API requests
@@ -439,7 +332,7 @@ The Jenkinsfile in the repository defines the CI/CD pipeline, which includes:
 
 ### API Documentation
 
-Access the API documentation at http://tiennkapp.org.m1/docs. You can test the diabetes prediction API directly from the Swagger UI.
+Access the API documentation at http://hn.org.m1/docs. You can test the diabetes prediction API directly from the Swagger UI.
 
 ### Model Training & Evaluation
 
@@ -453,9 +346,9 @@ The model training process is documented in the `notebooks/EDA_and_experiments.i
 ### Monitoring Dashboard
 
 Access the monitoring dashboards:
-1. Grafana (http://grafana.tiennk.com): For system metrics and custom application metrics
-2. Prometheus (http://prometheus.tiennk.com): For raw metrics and queries
-3. Alertmanager (http://alertmanager.tiennk.com): For alert management
+1. Grafana (http://grafana.hn.com): For system metrics and custom application metrics
+2. Prometheus (http://prometheus.hn.com): For raw metrics and queries
+3. Alertmanager (http://alertmanager.hn.com): For alert management
 
 Example Prometheus query to check the average request rate:
 
@@ -506,21 +399,3 @@ yamllint <yaml_file_name>.yaml
 ```
 
 ## Future Improvements
-
-- [ ] Implement A/B testing for model deployment
-- [ ] Add automated retraining pipeline
-- [ ] Enhance security configurations
-- [ ] Implement model explainability features
-- [ ] Add data drift monitoring
-- [x] ~~Building observability system on kubernetes (Prometheus and grafana)~~
-
-## Additional Resources
-
-- [Google Cloud Documentation](https://cloud.google.com/docs)
-- [Kubernetes Documentation](https://kubernetes.io/docs/home/)
-- [Terraform Documentation](https://developer.hashicorp.com/terraform/docs)
-- [MLflow Documentation](https://www.mlflow.org/docs/latest/index.html)
-- [FastAPI Documentation](https://fastapi.tiangolo.com/)
-- [Prometheus Documentation](https://prometheus.io/docs/introduction/overview/)
-- [Grafana Documentation](https://grafana.com/docs/)
-- [DVC Documentation](https://dvc.org/doc)
