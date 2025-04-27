@@ -16,7 +16,7 @@ This is the project when I first learned about MLE. This repo will help and guid
 - **Container orchestration system**: Kubernetes/K8S
 - **Data Version Control**: DVC
 - **K8s's package manager**: Helm
-- **Monitoring tool**: Prometheus,Grafana,Jaegar
+- **Monitoring tool**: Prometheus, Grafana, Jaegar
 - **Deliver infrastructure as code**: Ansible & Terraform
 - **Ingress controller**: Nginx ingress
 - **Cloud platform**: Google cloud platform/GCP
@@ -67,7 +67,8 @@ diabete_prediction/
 
 Register for a [Google Cloud Platform](https://console.cloud.google.com/) account
 
-After creating GCP account, let's create your own Project now:
+After creating GCP account, let's create your own Project 
+
 
 ![Create New Project](assets/NewProject.png)
 
@@ -168,7 +169,7 @@ terraform apply
 
 #### 1.3. Connect to the GKE cluster
 
-After terraform apply completes successfully, you have initialized the GKE cluster.
+After terraform apply completes successfully, you have initialized the GKE cluster
 
    Navigate to the GKE UI in Google Cloud Console:
 
