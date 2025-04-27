@@ -285,7 +285,7 @@ Add the following lines:
 35.198.253.81 grafana.hn.com
 35.198.253.81 alertmanager.hn.com
 ```
-![hosts](assets/hosts.png)
+<img src="assets/hostsimage.png" alt="hosts" width="600" />
 
 #### 3.4. Accessing Monitoring Services
 
