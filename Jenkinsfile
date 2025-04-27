@@ -1,93 +1,74 @@
 pipeline {
-    agent {
-        kubernetes {
-            yaml """
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    app: diabetes-prediction-pipeline
-spec:
-  serviceAccountName: jenkins
-  containers:
-  - name: python
-    image: python:3.11-slim
-    command:
-    - cat
-    tty: true
-  - name: docker
-    image: docker:latest
-    command:
-    - cat
-    tty: true
-    volumeMounts:
-    - name: docker-sock
-      mountPath: /var/run/docker.sock
-  - name: helm
-    image: alpine/helm:3.12.0
-    command:
-    - cat
-    tty: true
-  volumes:
-  - name: docker-sock
-    hostPath:
-      path: /var/run/docker.sock
-"""
-        }
+    agent any
+
+    options{
+        buildDiscarder(logRotator(numToKeepStr: '5', daysToKeepStr: '5'))
+        timestamps()
     }
 
-    options {
-        buildDiscarder(logRotator(numToKeepStr: '5'))
-        timestamps()
+    environment{
+        registry = 'hnmike/diabetes_predicton'
+        registryCredential = 'dockerhub'
     }
 
     stages {
         stage('Test') {
-            steps {
-                container('python') {
-                    echo 'Testing model correctness..'
-                    sh '''
-                        pip install -r requirements.txt && pip install pytest
-                        python -m pytest app/tests/test_model_correctness.py -v || echo "Tests completed with warnings"
-                    '''
+            agent {
+                docker {
+                    image 'python:3.11'
                 }
+            }
+            steps {
+                echo 'Testing model correctness..'
+                sh '''
+                    python3 -m pip install -r requirements.txt
+                    python3 -m pip install pytest
+                    python3 -m pytest app/tests/test_model_correctness.py -v || echo "Tests completed with warnings"
+                '''
             }
         }
         
         stage('Build') {
             steps {
-                container('docker') {
+                script {
                     echo 'Building image for deployment..'
-                    sh "docker build -t hnmike/diabete_prediction:${BUILD_NUMBER} ."
-                    sh "docker tag hnmike/diabete_prediction:${BUILD_NUMBER} hnmike/diabete_prediction:latest"
-                    
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credential', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                        sh """
-                            echo \${DOCKER_PASSWORD} | docker login -u \${DOCKER_USERNAME} --password-stdin
-                            docker push hnmike/diabete_prediction:${BUILD_NUMBER}
-                            docker push hnmike/diabete_prediction:latest
-                        """
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                    echo 'Pushing image to dockerhub..'
+                    docker.withRegistry( '', registryCredential ) {
+                        dockerImage.push()
+                        dockerImage.push('latest')
                     }
                 }
             }
         }
         
         stage('Deploy') {
+            agent {
+                kubernetes {
+                    containerTemplate {
+                        name 'helm' // Name of the container to be used for helm upgrade
+                        image 'hnmike/jenkins-k8s:lts' // The image containing helm
+                        imagePullPolicy 'Always' 
+                    }
+                }
+            }
             steps {
-                container('helm') {
-                    echo 'Deploying Helm chart ...'
-                    sh """
-                        helm upgrade --install diabetes ./heml/app_chart \\
-                        --namespace model-serving \\
-                        --create-namespace \\
-                        --set image.repository=hnmike/diabete_prediction \\
-                        --set image.tag=${BUILD_NUMBER} \\
-                        --set ingress.hosts[0].host=diabetes.hnapp.org.m1 \\
-                        --set service.type=ClusterIP \\
-                        --set metrics.enabled=true \\
-                        --wait --timeout 5m 
-                    """
-                    echo "Deployment complete."
+                script {
+                    container('helm') {
+                        echo 'Deploying Helm chart ...'
+                        sh """
+                            helm upgrade --install diabetes ./heml/app_chart \\
+                            --namespace model-serving \\
+                            --create-namespace \\
+                            --set image.repository=${registry} \\
+                            --set image.tag=${BUILD_NUMBER} \\
+                            --set ingress.hosts[0].host=diabetes.hnapp.org.m1 \\
+                            --set service.type=ClusterIP \\
+                            --set metrics.enabled=true \\
+                            --wait --timeout 5m
+                        """
+                        echo "Deployment complete."
+                    }
                 }
             }
         }
