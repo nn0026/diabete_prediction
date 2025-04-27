@@ -16,7 +16,7 @@ This is the project when I first learned about MLE. This repo will help and guid
 - **Container orchestration system**: Kubernetes/K8S
 - **Data Version Control**: DVC
 - **K8s's package manager**: Helm
-- **Monitoring tool**: Prometheus,Grafana,Jaegar
+- **Monitoring tool**: Prometheus, Grafana, Jaegar
 - **Deliver infrastructure as code**: Ansible & Terraform
 - **Ingress controller**: Nginx ingress
 - **Cloud platform**: Google cloud platform/GCP
